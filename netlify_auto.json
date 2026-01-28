@@ -1,0 +1,9 @@
+? What would you like to do? (Use arrow keys)
+❯ ⇄  Link this directory to an existing project 
+  +  Create & configure a new project [38D[38C
+Warning: Detected unsettled top-level await at file:///home/kelvinv/finance-flow-pro/node_modules/netlify-cli/bin/run.js:66
+await main()
+^
+
+
+

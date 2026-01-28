@@ -1,0 +1,5 @@
+Need to install the following packages:
+netlify@23.14.0
+Ok to proceed? (y) 
+npm warn deprecated node-domexception@1.0.0: Use your platform's native DOMException instead
+ ›   Error: Project not found. Please rerun "netlify link"

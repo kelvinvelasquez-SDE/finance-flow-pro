@@ -1,0 +1,3 @@
+Empujando a origin
+error: src refspec main no concuerda con ninguno
+error: falló el empuje de algunas referencias a 'origin'

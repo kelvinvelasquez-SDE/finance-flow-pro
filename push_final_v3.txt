@@ -1,0 +1,3 @@
+Empujando a https://github.com/kelvinvelasquez-SDEb/finance-flow-pro.git
+error: src refspec main no concuerda con ninguno
+error: falló el empuje de algunas referencias a 'https://github.com/kelvinvelasquez-SDEb/finance-flow-pro.git'

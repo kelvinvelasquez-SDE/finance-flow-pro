@@ -3,9 +3,11 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Plus, Banknote } from 'lucide-react'
+import { Plus, Banknote, Landmark, Percent } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/context/AuthContext'
+import { toast } from 'sonner'
+import { cn } from '@/lib/utils'
 
 export default function LoansPage() {
     const { user } = useAuth()
@@ -13,111 +15,165 @@ export default function LoansPage() {
     const [showModal, setShowModal] = useState(false)
     const [loading, setLoading] = useState(false)
 
-    // Form State
+    // Form
     const [name, setName] = useState('')
     const [principal, setPrincipal] = useState('')
     const [quota, setQuota] = useState('')
-    const [balance, setBalance] = useState('')
 
     useEffect(() => {
-        fetchLoans()
+        if (user) fetchLoans()
     }, [user])
 
     const fetchLoans = async () => {
-        if (!user) return
-        const { data } = await supabase.from('loans').select('*')
+        const { data } = await supabase.from('loans').select('*').order('created_at', { ascending: false })
         if (data) setLoans(data)
     }
 
     const handleAddLoan = async (e) => {
         e.preventDefault()
         setLoading(true)
+        const principalVal = parseFloat(principal)
 
         const { error } = await supabase.from('loans').insert({
             user_id: user.id,
             name,
-            principal_amount: parseFloat(principal),
+            principal_amount: principalVal,
             monthly_quota: parseFloat(quota),
-            current_balance: parseFloat(balance || principal)
+            current_balance: principalVal // Start with full debt
         })
 
         if (!error) {
-            setShowModal(false)
             fetchLoans()
+            setShowModal(false)
+            toast.success("Loan registered successfully!")
             setName('')
             setPrincipal('')
             setQuota('')
-            setBalance('')
+        } else {
+            toast.error("Failed to add loan: " + error.message)
         }
         setLoading(false)
     }
 
-    const registerPayment = async (loanId, currentBal, quota) => {
-        // Simple update deduction
-        const newBal = Math.max(0, currentBal - quota)
-        await supabase.from('loans').update({ current_balance: newBal }).eq('id', loanId)
-        fetchLoans()
+    const registerPayment = async (loan) => {
+        const newBal = Math.max(0, loan.current_balance - loan.monthly_quota)
+        const { error } = await supabase.from('loans').update({ current_balance: newBal }).eq('id', loan.id)
+
+        if (!error) {
+            fetchLoans()
+            if (newBal === 0) {
+                toast.success("Congratulations! Loan fully paid off! 🎉")
+            } else {
+                toast.success(`Payment recorded! New balance: $${newBal.toFixed(2)}`)
+            }
+        } else {
+            toast.error("Error updating balance")
+        }
     }
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-8 animate-in fade-in duration-500">
             <div className="flex items-center justify-between">
-                <h2 className="text-3xl font-bold tracking-tight">Loans</h2>
-                <Button onClick={() => setShowModal(true)}>
+                <div>
+                    <h2 className="text-3xl font-bold tracking-tight">Loans & Debts</h2>
+                    <p className="text-muted-foreground">Track your amortization and payment progress.</p>
+                </div>
+                <Button onClick={() => setShowModal(true)} className="bg-rose-600 hover:bg-rose-700">
                     <Plus className="mr-2 h-4 w-4" /> Add Loan
                 </Button>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {loans.map((loan) => {
-                    const progress = ((loan.principal_amount - loan.current_balance) / loan.principal_amount) * 100
-                    return (
-                        <Card key={loan.id}>
-                            <CardHeader>
-                                <CardTitle>{loan.name}</CardTitle>
-                                <CardDescription>Principal: ${loan.principal_amount}</CardDescription>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                <div>
-                                    <div className="flex justify-between text-sm mb-1">
-                                        <span>Balance</span>
-                                        <span className="font-bold">${loan.current_balance}</span>
-                                    </div>
-                                    <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
-                                        <div className="h-full bg-destructive transition-all duration-500" style={{ width: `${Math.max(5, (loan.current_balance / loan.principal_amount) * 100)}%` }} />
-                                    </div>
-                                </div>
+            {loans.length > 0 ? (
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                    {loans.map((loan) => {
+                        const paid = loan.principal_amount - loan.current_balance
+                        const percentPaid = (paid / loan.principal_amount) * 100
 
-                                <div className="flex items-center justify-between">
-                                    <span className="text-sm text-muted-foreground">Monthly Quota</span>
-                                    <span className="font-medium">${loan.monthly_quota}</span>
-                                </div>
-                            </CardContent>
-                            <CardFooter>
-                                <Button className="w-full" variant="outline" onClick={() => registerPayment(loan.id, loan.current_balance, loan.monthly_quota)}>
-                                    Register Payment
-                                </Button>
-                            </CardFooter>
-                        </Card>
-                    )
-                })}
-            </div>
+                        return (
+                            <Card key={loan.id} className="relative overflow-hidden border-rose-100 shadow-md transition-all hover:shadow-lg">
+                                <div className="absolute top-0 left-0 w-1 h-full bg-rose-500" />
+                                <CardHeader className="pb-2">
+                                    <div className="flex justify-between items-start">
+                                        <div>
+                                            <CardTitle className="text-lg">{loan.name}</CardTitle>
+                                            <CardDescription>Principal: ${loan.principal_amount.toLocaleString()}</CardDescription>
+                                        </div>
+                                        <div className="p-2 bg-rose-50 rounded-full text-rose-600">
+                                            <Landmark className="h-5 w-5" />
+                                        </div>
+                                    </div>
+                                </CardHeader>
+                                <CardContent className="space-y-4 pt-4">
+                                    <div className="grid grid-cols-2 gap-4 text-sm">
+                                        <div>
+                                            <p className="text-muted-foreground">Balance</p>
+                                            <p className="text-2xl font-bold text-rose-600">${loan.current_balance.toLocaleString()}</p>
+                                        </div>
+                                        <div className="text-right">
+                                            <p className="text-muted-foreground">Quota</p>
+                                            <p className="font-semibold">${loan.monthly_quota}</p>
+                                        </div>
+                                    </div>
 
+                                    <div className="space-y-1">
+                                        <div className="flex justify-between text-xs text-muted-foreground">
+                                            <span>Progress</span>
+                                            <span>{percentPaid.toFixed(0)}% paid</span>
+                                        </div>
+                                        <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
+                                            <div
+                                                className="h-full bg-rose-500 transition-all duration-700 ease-out"
+                                                style={{ width: `${percentPaid}%` }}
+                                            />
+                                        </div>
+                                    </div>
+                                </CardContent>
+                                <CardFooter className="bg-muted/20 pt-4">
+                                    <Button
+                                        className="w-full"
+                                        variant={loan.current_balance === 0 ? "secondary" : "default"}
+                                        disabled={loan.current_balance === 0}
+                                        onClick={() => registerPayment(loan)}
+                                    >
+                                        {loan.current_balance === 0 ? "Fully Paid ✅" : "Record Monthly Payment"}
+                                    </Button>
+                                </CardFooter>
+                            </Card>
+                        )
+                    })}
+                </div>
+            ) : (
+                <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-16 text-center animate-in zoom-in-50 duration-500">
+                    <div className="rounded-full bg-rose-50 p-4 mb-4">
+                        <Banknote className="h-10 w-10 text-rose-500" />
+                    </div>
+                    <h3 className="text-xl font-semibold">No loans active</h3>
+                    <p className="mb-6 text-muted-foreground max-w-sm">
+                        Great! You are debt-free. Or add a loan to verify your payment plan.
+                    </p>
+                    <Button onClick={() => setShowModal(true)} variant="outline">
+                        Register Loan
+                    </Button>
+                </div>
+            )}
+
+            {/* Modal */}
             {showModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
-                    <Card className="w-full max-w-lg shadow-lg">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+                    <Card className="w-full max-w-lg shadow-2xl">
                         <CardHeader>
-                            <CardTitle>Register Loan</CardTitle>
+                            <CardTitle>Register Debt / Loan</CardTitle>
+                            <CardDescription>Enter details to calculate amortization.</CardDescription>
                         </CardHeader>
                         <form onSubmit={handleAddLoan}>
                             <CardContent className="space-y-4">
                                 <div className="space-y-2">
-                                    <Label>Loan Name (e.g. Personal Loan 1)</Label>
-                                    <Input required value={name} onChange={e => setName(e.target.value)} />
+                                    <Label>Description</Label>
+                                    <Input placeholder="e.g. Car Loan" required value={name} onChange={e => setName(e.target.value)} />
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-2">
-                                        <Label>Principal Amount ($)</Label>
+                                        <Label>Principal ($)</Label>
                                         <Input type="number" required value={principal} onChange={e => setPrincipal(e.target.value)} />
                                     </div>
                                     <div className="space-y-2">

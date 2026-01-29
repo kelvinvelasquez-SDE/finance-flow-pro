@@ -1,15 +1,14 @@
 import React from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { Toaster } from 'sonner'
 import { AuthProvider, useAuth } from '@/context/AuthContext'
 import Layout from '@/components/Layout'
 import AuthPage from '@/pages/Auth'
 import Dashboard from '@/pages/Dashboard'
 import Cards from '@/pages/Cards'
-
-// Placeholders for other pages
-const Loans = () => <div className="text-2xl font-bold">Loans Management</div>
-const Business = () => <div className="text-2xl font-bold">Business & Granos</div>
-const Analysis = () => <div className="text-2xl font-bold">Data Analysis</div>
+import Loans from '@/pages/Loans'
+import Business from '@/pages/Business'
+import Analysis from '@/pages/Analysis'
 
 const ProtectedRoute = ({ children }) => {
     const { user, loading } = useAuth()
@@ -36,6 +35,7 @@ export default function App() {
                         <Route path="analysis" element={<Analysis />} />
                     </Route>
                 </Routes>
+                <Toaster position="top-right" theme="system" richColors closeButton />
             </BrowserRouter>
         </AuthProvider>
     )

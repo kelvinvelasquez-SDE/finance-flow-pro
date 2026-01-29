@@ -45,12 +45,12 @@ export default function LoansPage() {
         if (!error) {
             fetchLoans()
             setShowModal(false)
-            toast.success("Loan registered successfully!")
+            toast.success("¡Préstamo registrado exitosamente!")
             setName('')
             setPrincipal('')
             setQuota('')
         } else {
-            toast.error("Failed to add loan: " + error.message)
+            toast.error("Error al registrar: " + error.message)
         }
         setLoading(false)
     }
@@ -62,12 +62,12 @@ export default function LoansPage() {
         if (!error) {
             fetchLoans()
             if (newBal === 0) {
-                toast.success("Congratulations! Loan fully paid off! 🎉")
+                toast.success("¡Felicidades! ¡Préstamo pagado por completo! 🎉")
             } else {
-                toast.success(`Payment recorded! New balance: $${newBal.toFixed(2)}`)
+                toast.success(`¡Pago registrado! Nuevo saldo: $${newBal.toFixed(2)}`)
             }
         } else {
-            toast.error("Error updating balance")
+            toast.error("Error al actualizar saldo")
         }
     }
 
@@ -75,11 +75,11 @@ export default function LoansPage() {
         <div className="space-y-8 animate-in fade-in duration-500">
             <div className="flex items-center justify-between">
                 <div>
-                    <h2 className="text-3xl font-bold tracking-tight">Loans & Debts</h2>
-                    <p className="text-muted-foreground">Track your amortization and payment progress.</p>
+                    <h2 className="text-3xl font-bold tracking-tight">Préstamos y Deudas</h2>
+                    <p className="text-muted-foreground">Monitorea tu amortización y progreso de pagos.</p>
                 </div>
                 <Button onClick={() => setShowModal(true)} className="bg-rose-600 hover:bg-rose-700">
-                    <Plus className="mr-2 h-4 w-4" /> Add Loan
+                    <Plus className="mr-2 h-4 w-4" /> Agregar Préstamo
                 </Button>
             </div>
 
@@ -96,7 +96,7 @@ export default function LoansPage() {
                                     <div className="flex justify-between items-start">
                                         <div>
                                             <CardTitle className="text-lg">{loan.name}</CardTitle>
-                                            <CardDescription>Principal: ${loan.principal_amount.toLocaleString()}</CardDescription>
+                                            <CardDescription>Monto Original: ${loan.principal_amount.toLocaleString()}</CardDescription>
                                         </div>
                                         <div className="p-2 bg-rose-50 rounded-full text-rose-600">
                                             <Landmark className="h-5 w-5" />
@@ -106,19 +106,19 @@ export default function LoansPage() {
                                 <CardContent className="space-y-4 pt-4">
                                     <div className="grid grid-cols-2 gap-4 text-sm">
                                         <div>
-                                            <p className="text-muted-foreground">Balance</p>
+                                            <p className="text-muted-foreground">Saldo Actual</p>
                                             <p className="text-2xl font-bold text-rose-600">${loan.current_balance.toLocaleString()}</p>
                                         </div>
                                         <div className="text-right">
-                                            <p className="text-muted-foreground">Quota</p>
+                                            <p className="text-muted-foreground">Cuota</p>
                                             <p className="font-semibold">${loan.monthly_quota}</p>
                                         </div>
                                     </div>
 
                                     <div className="space-y-1">
                                         <div className="flex justify-between text-xs text-muted-foreground">
-                                            <span>Progress</span>
-                                            <span>{percentPaid.toFixed(0)}% paid</span>
+                                            <span>Progreso</span>
+                                            <span>{percentPaid.toFixed(0)}% pagado</span>
                                         </div>
                                         <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
                                             <div
@@ -135,7 +135,7 @@ export default function LoansPage() {
                                         disabled={loan.current_balance === 0}
                                         onClick={() => registerPayment(loan)}
                                     >
-                                        {loan.current_balance === 0 ? "Fully Paid ✅" : "Record Monthly Payment"}
+                                        {loan.current_balance === 0 ? "Pagado ✅" : "Registrar Pago Mensual"}
                                     </Button>
                                 </CardFooter>
                             </Card>
@@ -147,12 +147,12 @@ export default function LoansPage() {
                     <div className="rounded-full bg-rose-50 p-4 mb-4">
                         <Banknote className="h-10 w-10 text-rose-500" />
                     </div>
-                    <h3 className="text-xl font-semibold">No loans active</h3>
+                    <h3 className="text-xl font-semibold">Sin préstamos activos</h3>
                     <p className="mb-6 text-muted-foreground max-w-sm">
-                        Great! You are debt-free. Or add a loan to verify your payment plan.
+                        ¡Genial! Estás libre de deudas. O agrega un préstamo para verificar tu plan de amortización.
                     </p>
                     <Button onClick={() => setShowModal(true)} variant="outline">
-                        Register Loan
+                        Registrar Préstamo
                     </Button>
                 </div>
             )}
@@ -162,29 +162,29 @@ export default function LoansPage() {
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm p-4 animate-in fade-in duration-200">
                     <Card className="w-full max-w-lg shadow-2xl">
                         <CardHeader>
-                            <CardTitle>Register Debt / Loan</CardTitle>
-                            <CardDescription>Enter details to calculate amortization.</CardDescription>
+                            <CardTitle>Registrar Deuda / Préstamo</CardTitle>
+                            <CardDescription>Ingresa los detalles para calcular la amortización.</CardDescription>
                         </CardHeader>
                         <form onSubmit={handleAddLoan}>
                             <CardContent className="space-y-4">
                                 <div className="space-y-2">
-                                    <Label>Description</Label>
-                                    <Input placeholder="e.g. Car Loan" required value={name} onChange={e => setName(e.target.value)} />
+                                    <Label>Descripción</Label>
+                                    <Input placeholder="Ej. Préstamo Personal" required value={name} onChange={e => setName(e.target.value)} />
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-2">
-                                        <Label>Principal ($)</Label>
+                                        <Label>Monto Principal ($)</Label>
                                         <Input type="number" required value={principal} onChange={e => setPrincipal(e.target.value)} />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label>Monthly Quota ($)</Label>
+                                        <Label>Cuota Mensual ($)</Label>
                                         <Input type="number" required value={quota} onChange={e => setQuota(e.target.value)} />
                                     </div>
                                 </div>
                             </CardContent>
                             <CardFooter className="justify-end gap-2">
-                                <Button variant="ghost" type="button" onClick={() => setShowModal(false)}>Cancel</Button>
-                                <Button type="submit" disabled={loading}>Save Loan</Button>
+                                <Button variant="ghost" type="button" onClick={() => setShowModal(false)}>Cancelar</Button>
+                                <Button type="submit" disabled={loading}>Guardar</Button>
                             </CardFooter>
                         </form>
                     </Card>

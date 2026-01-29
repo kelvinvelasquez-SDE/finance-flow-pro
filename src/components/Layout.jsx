@@ -5,10 +5,10 @@ import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 
 const navItems = [
-    { name: 'Dashboard', path: '/', icon: LayoutDashboard },
+    { name: 'Inicio', path: '/', icon: LayoutDashboard },
     { name: 'Tarjetas', path: '/cards', icon: CreditCard },
     { name: 'Préstamos', path: '/loans', icon: Banknote },
-    { name: 'Granos', path: '/business', icon: PiggyBank },
+    { name: 'Negocios', path: '/business', icon: PiggyBank },
     { name: 'Análisis', path: '/analysis', icon: TrendingUp },
 ]
 

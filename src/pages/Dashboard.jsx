@@ -54,10 +54,10 @@ export default function Dashboard() {
 
     // Mock data for chart until we strictly categorize historicals
     const chartData = [
-        { name: 'Jan', value: 4000 },
+        { name: 'Ene', value: 4000 },
         { name: 'Feb', value: 3000 },
         { name: 'Mar', value: 2000 },
-        { name: 'Apr', value: 2780 },
+        { name: 'Abr', value: 2780 },
         { name: 'May', value: 1890 },
         { name: 'Jun', value: 2390 },
         { name: 'Jul', value: 3490 },
@@ -67,8 +67,8 @@ export default function Dashboard() {
         <div className="space-y-8 animate-in fade-in duration-500">
             <div className="flex items-center justify-between">
                 <div>
-                    <h2 className="text-3xl font-bold tracking-tight">Financial Overview</h2>
-                    <p className="text-muted-foreground">Your financial health at a glance.</p>
+                    <h2 className="text-3xl font-bold tracking-tight">Resumen Financiero</h2>
+                    <p className="text-muted-foreground">Tu salud financiera en un vistazo.</p>
                 </div>
                 {loading && <Loader2 className="h-5 w-5 animate-spin text-primary" />}
             </div>
@@ -77,48 +77,48 @@ export default function Dashboard() {
                 {/* Total Limit Card */}
                 <Card className="bg-gradient-to-br from-blue-500 to-indigo-600 border-none shadow-lg text-white">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium text-blue-100">Total Credit Limit</CardTitle>
+                        <CardTitle className="text-sm font-medium text-blue-100">Límite Total (Crédito)</CardTitle>
                         <CreditCard className="h-4 w-4 text-white opacity-70" />
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">${metrics.totalLimit.toLocaleString()}</div>
-                        <p className="text-xs text-blue-100/70">Across all registered cards</p>
+                        <p className="text-xs text-blue-100/70">En todas las tarjetas</p>
                     </CardContent>
                 </Card>
 
                 {/* Loan Balance Card */}
                 <Card className="bg-gradient-to-br from-rose-500 to-pink-600 border-none shadow-lg text-white">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium text-rose-100">Outstanding Debt</CardTitle>
+                        <CardTitle className="text-sm font-medium text-rose-100">Deuda Pendiente</CardTitle>
                         <Banknote className="h-4 w-4 text-white opacity-70" />
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">${metrics.loanBalance.toLocaleString()}</div>
-                        <p className="text-xs text-rose-100/70">Total loan principal remaining</p>
+                        <p className="text-xs text-rose-100/70">Total de préstamos</p>
                     </CardContent>
                 </Card>
 
                 {/* Business Margin Card */}
                 <Card className="bg-gradient-to-br from-emerald-500 to-teal-600 border-none shadow-lg text-white">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium text-emerald-100">Business Margin</CardTitle>
+                        <CardTitle className="text-sm font-medium text-emerald-100">Margen Negocio</CardTitle>
                         <PiggyBank className="h-4 w-4 text-white opacity-70" />
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">${metrics.businessMargin.toLocaleString()}</div>
-                        <p className="text-xs text-emerald-100/70">Net Profit (Sales - Exp)</p>
+                        <p className="text-xs text-emerald-100/70">Ganancia Neta (Ventas - Gastos)</p>
                     </CardContent>
                 </Card>
 
                 {/* Net Growth Card (Projected/Calculated) */}
                 <Card className="bg-gradient-to-br from-amber-500 to-orange-600 border-none shadow-lg text-white">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium text-amber-100">Net Position</CardTitle>
+                        <CardTitle className="text-sm font-medium text-amber-100">Patrimonio Proyectado</CardTitle>
                         <TrendingUp className="h-4 w-4 text-white opacity-70" />
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">${(metrics.businessMargin - metrics.loanBalance * 0.05).toLocaleString()}</div>
-                        <p className="text-xs text-amber-100/70">Est. Monthly Growth</p>
+                        <p className="text-xs text-amber-100/70">Crecimiento Est. Mensual</p>
                     </CardContent>
                 </Card>
             </div>
@@ -126,7 +126,7 @@ export default function Dashboard() {
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
                 <Card className="col-span-4 border-none shadow-md">
                     <CardHeader>
-                        <CardTitle>Cash Flow Trend</CardTitle>
+                        <CardTitle>Tendencia de Flujo</CardTitle>
                     </CardHeader>
                     <CardContent className="pl-2">
                         <div className="h-[300px] w-full">
@@ -152,7 +152,7 @@ export default function Dashboard() {
                 </Card>
                 <Card className="col-span-3 border-none shadow-md">
                     <CardHeader>
-                        <CardTitle>Recent Activity</CardTitle>
+                        <CardTitle>Actividad Reciente</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-6">
@@ -168,7 +168,7 @@ export default function Dashboard() {
                                     </div>
                                 </div>
                             )) : (
-                                <p className="text-sm text-muted-foreground text-center py-8">No recent activity.</p>
+                                <p className="text-sm text-muted-foreground text-center py-8">Sin actividad reciente.</p>
                             )}
                         </div>
                     </CardContent>

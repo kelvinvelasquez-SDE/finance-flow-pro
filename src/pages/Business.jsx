@@ -74,7 +74,7 @@ export default function BusinessPage() {
         if (!error) {
             setShowModal(false)
             fetchTxs()
-            toast.success("Transaction recorded successfully")
+            toast.success("Transacción registrada exitosamente")
             // Reset form
             setQty('')
             setPrice('')
@@ -83,7 +83,7 @@ export default function BusinessPage() {
             setFuel('0')
             setFreight('0')
         } else {
-            toast.error(error.message)
+            toast.error("Error: " + error.message)
         }
         setLoading(false)
     }
@@ -92,11 +92,11 @@ export default function BusinessPage() {
         <div className="space-y-8 animate-in fade-in duration-500">
             <div className="flex items-center justify-between">
                 <div>
-                    <h2 className="text-3xl font-bold tracking-tight">Business Operations</h2>
-                    <p className="text-muted-foreground">Manage your purchases, sales, and logistics.</p>
+                    <h2 className="text-3xl font-bold tracking-tight">Negocios y Operaciones</h2>
+                    <p className="text-muted-foreground">Gestiona tus compras, ventas y logística de granos.</p>
                 </div>
                 <Button onClick={() => setShowModal(true)} className="bg-emerald-600 hover:bg-emerald-700">
-                    <Plus className="mr-2 h-4 w-4" /> New Transaction
+                    <Plus className="mr-2 h-4 w-4" /> Nueva Transacción
                 </Button>
             </div>
 
@@ -104,7 +104,7 @@ export default function BusinessPage() {
             <div className="grid gap-4 md:grid-cols-3">
                 <Card className="bg-gradient-to-br from-emerald-50 to-emerald-100 border-none shadow-sm">
                     <CardHeader className="pb-2 flex flex-row items-center justify-between">
-                        <CardTitle className="text-sm font-medium text-emerald-800">Total Revenue</CardTitle>
+                        <CardTitle className="text-sm font-medium text-emerald-800">Ingresos Totales</CardTitle>
                         <ArrowUpRight className="h-4 w-4 text-emerald-600" />
                     </CardHeader>
                     <CardContent>
@@ -113,7 +113,7 @@ export default function BusinessPage() {
                 </Card>
                 <Card className="bg-gradient-to-br from-red-50 to-red-100 border-none shadow-sm">
                     <CardHeader className="pb-2 flex flex-row items-center justify-between">
-                        <CardTitle className="text-sm font-medium text-red-800">Total Expenses</CardTitle>
+                        <CardTitle className="text-sm font-medium text-red-800">Gastos Totales</CardTitle>
                         <ArrowDownRight className="h-4 w-4 text-red-600" />
                     </CardHeader>
                     <CardContent>
@@ -122,12 +122,12 @@ export default function BusinessPage() {
                 </Card>
                 <Card className={cn("border-none shadow-sm text-white", stats.margin >= 0 ? "bg-gradient-to-r from-green-600 to-emerald-600" : "bg-gradient-to-r from-red-600 to-orange-600")}>
                     <CardHeader className="pb-2 flex flex-row items-center justify-between">
-                        <CardTitle className="text-sm font-medium text-white/90">Net Margin</CardTitle>
+                        <CardTitle className="text-sm font-medium text-white/90">Margen Neto</CardTitle>
                         <TrendingUp className="h-4 w-4 text-white" />
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">${stats.margin.toLocaleString()}</div>
-                        <p className="text-xs text-white/80">Profit after costs</p>
+                        <p className="text-xs text-white/80">Ganancia después de costos</p>
                     </CardContent>
                 </Card>
             </div>
@@ -135,7 +135,7 @@ export default function BusinessPage() {
             {/* Transactions List */}
             <Card className="border-none shadow-md">
                 <CardHeader>
-                    <CardTitle>Recent Activity</CardTitle>
+                    <CardTitle>Actividad Reciente</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="space-y-1">
@@ -150,8 +150,11 @@ export default function BusinessPage() {
                                             tx.type === 'purchase' ? <Truck className="h-5 w-5" /> : <TrendingDown className="h-5 w-5" />}
                                     </div>
                                     <div>
-                                        <p className="font-medium capitalize text-base">{tx.type} {tx.quantity_quintales ? `(${tx.quantity_quintales} qq)` : ''}</p>
-                                        <p className="text-sm text-muted-foreground">{new Date(tx.transaction_date).toLocaleDateString()} • {tx.location || 'No location'}</p>
+                                        <p className="font-medium capitalize text-base">
+                                            {tx.type === 'sale' ? 'Venta' : tx.type === 'purchase' ? 'Compra' : 'Gasto'}
+                                            {tx.quantity_quintales ? ` (${tx.quantity_quintales} qq)` : ''}
+                                        </p>
+                                        <p className="text-sm text-muted-foreground">{new Date(tx.transaction_date).toLocaleDateString()} • {tx.location || 'Sin ubicación'}</p>
                                     </div>
                                 </div>
                                 <div className={cn("font-bold text-lg", tx.type === 'sale' ? "text-emerald-600" : "text-red-600")}>
@@ -160,7 +163,7 @@ export default function BusinessPage() {
                             </div>
                         )) : (
                             <div className="text-center py-12 text-muted-foreground">
-                                No transactions recorded yet.
+                                No se encontraron transacciones.
                             </div>
                         )}
                     </div>
@@ -172,31 +175,31 @@ export default function BusinessPage() {
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm p-4 animate-in fade-in duration-200">
                     <Card className="w-full max-w-lg shadow-2xl">
                         <CardHeader>
-                            <CardTitle>New Transaction</CardTitle>
-                            <CardDescription>Log sales, purchases, or operational expenses.</CardDescription>
+                            <CardTitle>Nueva Transacción</CardTitle>
+                            <CardDescription>Registra ventas, compras o gastos operativos.</CardDescription>
                         </CardHeader>
                         <form onSubmit={handleSave}>
                             <CardContent className="space-y-4">
                                 <div className="space-y-2">
-                                    <Label>Transaction Type</Label>
+                                    <Label>Tipo de Transacción</Label>
                                     <select
                                         className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                                         value={type} onChange={e => setType(e.target.value)}
                                     >
-                                        <option value="purchase">Purchase (Compra de Grano)</option>
-                                        <option value="sale">Sale (Venta de Grano)</option>
-                                        <option value="expense">Expense (Gasto Operativo)</option>
+                                        <option value="purchase">Compra de Grano (Egreso)</option>
+                                        <option value="sale">Venta de Grano (Ingreso)</option>
+                                        <option value="expense">Gasto Operativo (Egreso)</option>
                                     </select>
                                 </div>
 
                                 {type !== 'expense' && (
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
-                                            <Label>Quantity (Quintales)</Label>
+                                            <Label>Cantidad (Quintales)</Label>
                                             <Input type="number" value={qty} onChange={e => setQty(e.target.value)} placeholder="0.00" />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label>Price per QQ ($)</Label>
+                                            <Label>Precio por QQ ($)</Label>
                                             <Input type="number" value={price} onChange={e => setPrice(e.target.value)} placeholder="0.00" />
                                         </div>
                                     </div>
@@ -204,33 +207,33 @@ export default function BusinessPage() {
 
                                 {type === 'expense' && (
                                     <div className="space-y-2">
-                                        <Label>Total Amount ($)</Label>
+                                        <Label>Monto Total ($)</Label>
                                         <Input type="number" value={total} onChange={e => setTotal(e.target.value)} placeholder="0.00" />
                                     </div>
                                 )}
 
                                 <div className="space-y-2 opacity-80">
-                                    <p className="text-xs font-medium uppercase text-muted-foreground">Logistics Costs (Optional)</p>
+                                    <p className="text-xs font-medium uppercase text-muted-foreground">Gastos Logísticos (Opcional)</p>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
-                                            <Label className="text-xs">Fuel ($)</Label>
+                                            <Label className="text-xs">Combustible ($)</Label>
                                             <Input type="number" className="h-8" value={fuel} onChange={e => setFuel(e.target.value)} />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label className="text-xs">Freight ($)</Label>
+                                            <Label className="text-xs">Flete ($)</Label>
                                             <Input type="number" className="h-8" value={freight} onChange={e => setFreight(e.target.value)} />
                                         </div>
                                     </div>
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label>Location / Notes</Label>
-                                    <Input value={location} onChange={e => setLocation(e.target.value)} placeholder="e.g. Bodega San Miguel" />
+                                    <Label>Ubicación / Notas</Label>
+                                    <Input value={location} onChange={e => setLocation(e.target.value)} placeholder="Ej. Bodega San Miguel" />
                                 </div>
                             </CardContent>
                             <CardFooter className="justify-end gap-2">
-                                <Button variant="ghost" type="button" onClick={() => setShowModal(false)}>Cancel</Button>
-                                <Button type="submit" disabled={loading} className="bg-emerald-600 hover:bg-emerald-700">Save Transaction</Button>
+                                <Button variant="ghost" type="button" onClick={() => setShowModal(false)}>Cancelar</Button>
+                                <Button type="submit" disabled={loading} className="bg-emerald-600 hover:bg-emerald-700">Guardar Transacción</Button>
                             </CardFooter>
                         </form>
                     </Card>

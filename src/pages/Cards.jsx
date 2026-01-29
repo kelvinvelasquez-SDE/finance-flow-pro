@@ -3,11 +3,12 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Plus, Zap, CreditCard as CardIcon, Loader2, Wallet } from 'lucide-react'
+import { Plus, Zap, CreditCard as CardIcon, Loader2, Wallet, Pencil } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/context/AuthContext'
 import { getRecommendedCard } from '@/lib/finance'
 import { cn } from '@/lib/utils'
+import { toast } from 'sonner'
 
 // Helper for card gradients based on Tier
 const getCardGradient = (tier) => {
@@ -19,8 +20,16 @@ const getCardGradient = (tier) => {
 }
 
 // Internal Component for a single Credit Card
-const CreditCardItem = ({ card }) => (
-    <div className={cn("relative overflow-hidden rounded-xl shadow-lg p-6 transition-all hover:scale-[1.02] duration-300", getCardGradient(card.tier))}>
+const CreditCardItem = ({ card, onEdit }) => (
+    <div className={cn("relative overflow-hidden rounded-xl shadow-lg p-6 transition-all hover:scale-[1.02] duration-300 group", getCardGradient(card.tier))}>
+        <Button
+            variant="ghost"
+            size="icon"
+            className="absolute top-2 right-2 text-white/50 hover:text-white hover:bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity"
+            onClick={() => onEdit(card)}
+        >
+            <Pencil className="h-4 w-4" />
+        </Button>
         <div className="flex justify-between items-start mb-8">
             <div>
                 <h3 className="font-bold text-lg tracking-wide">{card.bank}</h3>
@@ -30,7 +39,7 @@ const CreditCardItem = ({ card }) => (
         </div>
 
         <div className="space-y-1 mb-4">
-            <p className="text-xs opacity-70">Credit Limit</p>
+            <p className="text-xs opacity-70">Límite de Crédito</p>
             <p className="font-mono text-xl font-bold tracking-widest">
                 ${card.credit_limit.toLocaleString()}
             </p>
@@ -38,12 +47,12 @@ const CreditCardItem = ({ card }) => (
 
         <div className="flex justify-between items-end text-xs opacity-90">
             <div>
-                <span className="block opacity-60">Cutoff</span>
-                <span className="font-semibold">Day {card.cutoff_day}</span>
+                <span className="block opacity-60">Corte</span>
+                <span className="font-semibold">Día {card.cutoff_day}</span>
             </div>
             <div>
-                <span className="block opacity-60">Payment</span>
-                <span className="font-semibold">Day {card.payment_day}</span>
+                <span className="block opacity-60">Pago</span>
+                <span className="font-semibold">Día {card.payment_day}</span>
             </div>
         </div>
 
@@ -61,6 +70,7 @@ export default function CardsPage() {
     const [fetching, setFetching] = useState(true)
 
     // Form State
+    const [editingId, setEditingId] = useState(null)
     const [bank, setBank] = useState('Agrícola')
     const [tier, setTier] = useState('Platinum')
     const [limit, setLimit] = useState('')
@@ -78,27 +88,56 @@ export default function CardsPage() {
         setFetching(false)
     }
 
-    const handleAddCard = async (e) => {
+    const openEditModal = (card) => {
+        setEditingId(card.id)
+        setBank(card.bank)
+        setTier(card.tier)
+        setLimit(card.credit_limit)
+        setCutoff(card.cutoff_day)
+        setPayment(card.payment_day)
+        setShowModal(true)
+    }
+
+    const openNewModal = () => {
+        setEditingId(null)
+        setBank('Agrícola')
+        setTier('Platinum')
+        setLimit('')
+        setCutoff('')
+        setPayment('')
+        setShowModal(true)
+    }
+
+    const handleSave = async (e) => {
         e.preventDefault()
         setLoading(true)
 
-        const { error } = await supabase.from('cards').insert({
+        const payload = {
             user_id: user.id,
             bank,
             tier,
             credit_limit: parseFloat(limit),
             cutoff_day: parseInt(cutoff),
             payment_day: parseInt(payment)
-        })
+        }
+
+        let error = null
+        if (editingId) {
+            // Update
+            const res = await supabase.from('cards').update(payload).eq('id', editingId)
+            error = res.error
+        } else {
+            // Insert
+            const res = await supabase.from('cards').insert(payload)
+            error = res.error
+        }
 
         if (!error) {
             setShowModal(false)
             fetchCards()
-            setLimit('')
-            setCutoff('')
-            setPayment('')
+            toast.success(editingId ? "Tarjeta actualizada correctamente" : "Tarjeta agregada correctamente")
         } else {
-            alert(error.message)
+            toast.error("Error: " + error.message)
         }
         setLoading(false)
     }
@@ -109,11 +148,11 @@ export default function CardsPage() {
         <div className="space-y-8 animate-in fade-in duration-500">
             <div className="flex items-center justify-between">
                 <div>
-                    <h2 className="text-3xl font-bold tracking-tight">Wallet</h2>
-                    <p className="text-muted-foreground">Manage your credit cards and billing cycles.</p>
+                    <h2 className="text-3xl font-bold tracking-tight">Billetera</h2>
+                    <p className="text-muted-foreground">Gestiona tus tarjetas y fechas de corte.</p>
                 </div>
-                <Button onClick={() => setShowModal(true)}>
-                    <Plus className="mr-2 h-4 w-4" /> Add Card
+                <Button onClick={openNewModal}>
+                    <Plus className="mr-2 h-4 w-4" /> Agregar Tarjeta
                 </Button>
             </div>
 
@@ -123,10 +162,10 @@ export default function CardsPage() {
                     <CardHeader className="pb-2">
                         <CardTitle className="flex items-center gap-2 text-lg text-white">
                             <Zap className="h-5 w-5 text-yellow-300 fill-current animate-pulse" />
-                            Smart Recommendation
+                            Recomendación Inteligente
                         </CardTitle>
                         <CardDescription className="text-purple-100">
-                            Use this card today to maximize your financing time (approx 45 days).
+                            Usa esta tarjeta hoy para tener más días de financiamiento (aprox 45 días).
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -138,8 +177,8 @@ export default function CardsPage() {
                                 </span>
                             </div>
                             <div className="text-right">
-                                <p className="text-sm opacity-80">Cutoff closes in</p>
-                                <p className="text-2xl font-bold">{recommended.daysUntilCutoff} days</p>
+                                <p className="text-sm opacity-80">Corte cierra en</p>
+                                <p className="text-2xl font-bold">{recommended.daysUntilCutoff} días</p>
                             </div>
                         </div>
                     </CardContent>
@@ -153,7 +192,7 @@ export default function CardsPage() {
             ) : cards.length > 0 ? (
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                     {cards.map((card) => (
-                        <CreditCardItem key={card.id} card={card} />
+                        <CreditCardItem key={card.id} card={card} onEdit={openEditModal} />
                     ))}
                 </div>
             ) : (
@@ -162,12 +201,12 @@ export default function CardsPage() {
                     <div className="rounded-full bg-secondary p-4 mb-4">
                         <Wallet className="h-8 w-8 text-muted-foreground" />
                     </div>
-                    <h3 className="text-lg font-semibold">No cards yet</h3>
+                    <h3 className="text-lg font-semibold">Sin Tarjetas</h3>
                     <p className="mb-4 text-sm text-muted-foreground max-w-sm">
-                        Add your credit cards to start tracking cutoffs, payment dates, and limits efficiently.
+                        Agrega tus tarjetas para monitorear cortes, fechas de pago y límites eficientemente.
                     </p>
-                    <Button onClick={() => setShowModal(true)} variant="outline">
-                        Register your first card
+                    <Button onClick={openNewModal} variant="outline">
+                        Registrar Primera Tarjeta
                     </Button>
                 </div>
             )}
@@ -177,14 +216,14 @@ export default function CardsPage() {
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm p-4 animate-in fade-in duration-200">
                     <Card className="w-full max-w-lg shadow-2xl border-primary/20">
                         <CardHeader>
-                            <CardTitle>Add New Card</CardTitle>
-                            <CardDescription>Enter card details to track payments.</CardDescription>
+                            <CardTitle>{editingId ? "Editar Tarjeta" : "Agregar Nueva Tarjeta"}</CardTitle>
+                            <CardDescription>Ingesa los detalles para el seguimiento de pagos.</CardDescription>
                         </CardHeader>
-                        <form onSubmit={handleAddCard}>
+                        <form onSubmit={handleSave}>
                             <CardContent className="space-y-4">
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-2">
-                                        <Label>Bank</Label>
+                                        <Label>Banco</Label>
                                         <select
                                             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                                             value={bank} onChange={e => setBank(e.target.value)}
@@ -195,41 +234,42 @@ export default function CardsPage() {
                                             <option value="Atlántida">Atlántida</option>
                                             <option value="Cuscatlán">Cuscatlán</option>
                                             <option value="BAC">BAC</option>
+                                            <option value="Industrial">Industrial</option>
                                         </select>
                                     </div>
                                     <div className="space-y-2">
-                                        <Label>Tier</Label>
+                                        <Label>Categoría</Label>
                                         <select
                                             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                                             value={tier} onChange={e => setTier(e.target.value)}
                                         >
                                             <option value="Platinum">Platinum</option>
                                             <option value="ONE">ONE</option>
-                                            <option value="Classic">Classic</option>
-                                            <option value="Gold">Gold</option>
+                                            <option value="Classic">Clásica</option>
+                                            <option value="Gold">Oro (Gold)</option>
                                             <option value="Black">Black</option>
                                             <option value="Infinite">Infinite</option>
                                         </select>
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <Label>Credit Limit ($)</Label>
+                                    <Label>Límite de Crédito ($)</Label>
                                     <Input type="number" required value={limit} onChange={e => setLimit(e.target.value)} placeholder="5000" />
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-2">
-                                        <Label>Cutoff Day (1-31)</Label>
+                                        <Label>Día Corte (1-31)</Label>
                                         <Input type="number" min="1" max="31" required value={cutoff} onChange={e => setCutoff(e.target.value)} placeholder="15" />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label>Payment Day (1-31)</Label>
+                                        <Label>Día Pago (1-31)</Label>
                                         <Input type="number" min="1" max="31" required value={payment} onChange={e => setPayment(e.target.value)} placeholder="05" />
                                     </div>
                                 </div>
                             </CardContent>
                             <CardFooter className="justify-end gap-2">
-                                <Button variant="ghost" type="button" onClick={() => setShowModal(false)}>Cancel</Button>
-                                <Button type="submit" disabled={loading}>Save Card</Button>
+                                <Button variant="ghost" type="button" onClick={() => setShowModal(false)}>Cancelar</Button>
+                                <Button type="submit" disabled={loading}>{editingId ? "Actualizar" : "Guardar"}</Button>
                             </CardFooter>
                         </form>
                     </Card>

@@ -1,0 +1,80 @@
+[96m[1m​[22m[39m
+[96m[1mNetlify Build                                                 [22m[39m
+[96m[1m────────────────────────────────────────────────────────────────[22m[39m
+[36m[1m​[22m[39m
+[36m[1m❯ Version[22m[39m
+  @netlify/build 35.5.13
+[36m[1m​[22m[39m
+[36m[1m❯ Flags[22m[39m
+  accountId: 6960150b0216e762d8d22111
+  deployId: 697a8ed9ccb64e291b16c52d
+[36m[1m​[22m[39m
+[36m[1m❯ Current directory[22m[39m
+  /home/kelvinv/finance-flow-pro
+[36m[1m​[22m[39m
+[36m[1m❯ Config file[22m[39m
+  No config file was defined: using default values.
+[36m[1m​[22m[39m
+[36m[1m❯ Context[22m[39m
+  production
+[96m[1m​[22m[39m
+[96m[1mBuild command from Netlify app                                [22m[39m
+[96m[1m────────────────────────────────────────────────────────────────[22m[39m
+​
+[36m$ npm run build[39m
+
+> finance-flow-pro@1.0.0 build
+> vite build
+
+vite v7.3.1 building client environment for production...
+transforming...
+✓ 1772 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.46 kB │ gzip:   0.30 kB
+dist/assets/index-CTm_5qd1.css   15.10 kB │ gzip:   3.74 kB
+dist/assets/index-Akt8NerW.js   441.57 kB │ gzip: 131.40 kB
+✓ built in 17.73s
+​
+[90m(build.command completed in 19.9s)[39m
+
+Deploying to Netlify
+────────────────────────────────────────────────────────────────
+
+[32mDeploy path: [39m/home/kelvinv/finance-flow-pro/dist
+
+⠋ Uploading blobs to deploy store...
+
+✔ Finished uploading blobs to deploy store
+⠋ Hashing files...
+⠋ Looking for a functions cache...
+✔ No cached functions were found
+✔ Finished hashing 
+⠋ CDN diffing files...
+✔ CDN requesting 4 files
+⠋ Uploading 4 files
+✔ Finished uploading 4 assets
+⠋ Waiting for deploy to go live...
+✔ Deploy is live!
+[96m[1m​[22m[39m
+[96m[1mNetlify Build Complete                                        [22m[39m
+[96m[1m────────────────────────────────────────────────────────────────[22m[39m
+​
+[90m(Netlify Build completed in 23.4s)[39m
+
+🚀 Deploy complete
+────────────────────────────────────────────────────────────────
+
+╭────────────────────── ⬥  Production deploy is live ⬥  ───────────────────────╮
+│                                                                              │
+│                         Deployed to production URL:                          │
+│                https://finance-flow-kelvinv-demo.netlify.app                 │
+│                                                                              │
+│                             Unique deploy URL:                               │
+│   https://697a8ed9ccb64e291b16c52d--finance-flow-kelvinv-demo.netlify.app    │
+│                                                                              │
+╰──────────────────────────────────────────────────────────────────────────────╯
+
+[32mBuild logs: [39m        https://app.netlify.com/projects/finance-flow-kelvinv-demo/deploys/697a8ed9ccb64e291b16c52d
+[32mFunction logs: [39m     https://app.netlify.com/projects/finance-flow-kelvinv-demo/logs/functions
+[32mEdge function Logs: [39mhttps://app.netlify.com/projects/finance-flow-kelvinv-demo/logs/edge-functions

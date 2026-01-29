@@ -1,0 +1,8 @@
+En la rama master
+Archivos sin seguimiento:
+  (usa "git add <archivo>..." para incluirlo a lo que será confirmado)
+	git_status.txt
+	netlify_create.json
+	netlify_create_log.txt
+
+no hay nada agregado al commit pero hay archivos sin seguimiento presentes (usa "git add" para hacerles seguimiento)

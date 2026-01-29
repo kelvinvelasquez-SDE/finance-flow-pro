@@ -25,10 +25,10 @@ const CreditCardItem = ({ card, onEdit }) => (
         <Button
             variant="ghost"
             size="icon"
-            className="absolute top-2 right-2 text-white/50 hover:text-white hover:bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity"
+            className="absolute top-2 right-2 text-white/70 hover:text-white hover:bg-white/20"
             onClick={() => onEdit(card)}
         >
-            <Pencil className="h-4 w-4" />
+            <Pencil className="h-5 w-5" />
         </Button>
         <div className="flex justify-between items-start mb-8">
             <div>

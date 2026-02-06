@@ -1,2 +1,37 @@
-node_modules
-node_modules
+# Dependencies
+node_modules/
+
+# Build
+dist/
+
+# Environment
+.env
+.env.local
+.env*.local
+
+# IDE
+.idea/
+.vscode/
+
+# System
+.DS_Store
+Thumbs.db
+
+# Netlify
+.netlify/
+netlify*.log
+netlify*.json
+netlify*.txt
+
+# Logs
+*.log
+*.txt
+!README.md
+
+# Supabase temp
+supabase*.json
+
+# Git temp files
+git_*.txt
+push_*.txt
+repo_*.txt
